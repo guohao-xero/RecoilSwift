@@ -6,7 +6,7 @@ struct BookShop {}
 
 // Atoms
 extension BookShop {
-    static let selectedQuarterStore = Atom<Int?>(nil)
+    static let selectedQuarterState = Atom<Quarter?>(nil)
     static let allBookStore = atom { [Book]() }
     static let selectedCategoryState = Atom<BookCategory?>(nil)
 }
@@ -14,10 +14,16 @@ extension BookShop {
 // Selectors
 extension BookShop {
     static let currentBooksSel = selector { get -> [Book] in
-        let books = get(allBookStore)
-        if let category = get(selectedCategoryState) {
-            return books.filter { $0.category == category }
+        var books = get(allBookStore)
+        
+        if let selectedQuarterState = get(selectedQuarterState) {
+            books = books.filter { $0.publishDate == selectedQuarterState }
         }
+        
+        if let selectedCategoryState = get(selectedCategoryState) {
+            books = books.filter { $0.category == selectedCategoryState }
+        }
+        
         return books
     }
 
